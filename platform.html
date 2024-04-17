@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deception Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Deception Detector</h1>
+    <label for="text-input">Enter text:</label>
+    <br>
+    <textarea id="text-input" rows="4" cols="50"></textarea>
+    <br>
+    <button onclick="predict()">Predict</button>
+    <div id="result"></div>
+
+    <script>
+        function predict() {
+            var textInput = document.getElementById('text-input').value;
+
+            // Send a POST request to the Flask /predict endpoint
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: textInput,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the predictions
+                document.getElementById('result').innerHTML = `
+                    <p>Multinomial Naive Bayes Prediction: ${data.multinomial_nb_prediction}</p>
+                    <p>Passive Aggressive Prediction: ${data.passive_aggressive_prediction}</p>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = '<p>Error occurred. Please try again.</p>';
+            });
+        }
+    </script>
+</body>
+</html>
